@@ -47,60 +47,71 @@ function Start-Pomodoro {
         [switch]
         $DisableNotifications
     )
+    $Skip = $false
     $IsBreak = $false
     $SessionCount = 0
     $Minutes = 0
+    $StopWatch = New-Object -TypeName System.Diagnostics.Stopwatch
+    $TimeSpan = $null    
 
     while ($true) {
+        Write-Host ""
         if ($IsBreak) {
-            Write-Host ""
             if ($SessionCount -lt 3) {
                 $Minutes = $ShortBreak
                 $SessionCount += 1
-                Write-Host -ForegroundColor Cyan "Press 'Enter' to start short break #$SessionCount for $(Convert-FromSeconds -Seconds ($Minutes * 60)) minutes"
-                Wait-KeyPress -Key 'Enter'
+                Write-Host -ForegroundColor Cyan "Press 'Enter' to start short break #$SessionCount for $("{0:mm\:ss}" -f (New-TimeSpan -Minutes $Minutes)) minutes"
             }
             else {
                 $Minutes = $LongBreak
                 $SessionCount = 0
-                Write-Host -ForegroundColor Green "Press 'Enter' to start long break #4 for $(Convert-FromSeconds -Seconds ($Minutes * 60)) minutes"
-                Wait-KeyPress -Key 'Enter'
+                Write-Host -ForegroundColor Green "Press 'Enter' to start long break #4 for $("{0:mm\:ss}" -f (New-TimeSpan -Minutes $Minutes)) minutes"
             }
         }
         else {
             $Minutes = $Pomodoro
-            Write-Host ""
-            Write-Host -ForegroundColor Magenta "Press 'Enter' to start deep work for $(Convert-FromSeconds -Seconds ($Pomodoro * 60)) minutes"
-            Wait-KeyPress -Key 'Enter'
+            Write-Host -ForegroundColor Magenta "Press 'Enter' to start deep work for $("{0:mm\:ss}" -f (New-TimeSpan -Minutes $Minutes)) minutes"
         }
+        Wait-KeyPress -Key 'Enter'
+        
+        
         $IsBreak = !$IsBreak
+        $TimeSpan = New-TimeSpan -Minutes $Minutes
 
-        Write-Host "Press '$PlayPauseKey' to Pause"
-        for ($SecondsLeft = $Minutes * 60; $SecondsLeft -gt 0; $SecondsLeft--) {
-            Write-Host -ForegroundColor Yellow "`r$(Convert-FromSeconds -Seconds $SecondsLeft) left of $(Convert-FromSeconds -Seconds ($Minutes * 60))" -NoNewline
-            for ($k = 0; $k -lt 10; $k++) {
-                Start-Sleep -Milliseconds 100
-                Test-KeyPressed -Key $PlayPauseKey
+        Write-Host "`nCONTROLS"
+        Write-Host "SpaceBar: Pause"
+        Write-Host "Enter:    Play"
+        Write-Host "R:        Restart Timer"
+        Write-Host "S:        Skip Timer"
+
+        $StopWatch.Start()
+        
+        do {
+            Write-Host -ForegroundColor Yellow "`r$("{0:mm\:ss}" -f ($Timespan - $StopWatch.Elapsed))" -NoNewline
+            
+            if ([Console]::KeyAvailable) {
+                switch ([Console]::ReadKey($true).Key) {
+                    'Enter' { $StopWatch.Start() }
+                    'SpaceBar' { $StopWatch.Stop() }
+                    'R' { $StopWatch.Restart() }
+                    'S' { $Skip = $true }
+                    Default {  }
+                }
             }
         }
+        until ($StopWatch.Elapsed -ge $TimeSpan -or $Skip)
+        $StopWatch.Reset()
+        $Skip = $false
         
         if ($DisableNotifications -eq $false) {
             if ($IsBreak) {
-                Show-ToastNotification -ApplicationTitle 'PomodoroTimer' -Text "Deep work ended"
+                Show-ToastNotification -ApplicationTitle 'PomodoroTimer' -ToastBody "Deep work ended"
             }
             else {
-                Show-ToastNotification -ApplicationTitle 'PomodoroTimer' -Text "Break ended"
+                Show-ToastNotification -ApplicationTitle 'PomodoroTimer' -ToastBody "Break ended"
             }
         }
     }
-}
-
-function Convert-FromSeconds {
-    param (
-        $Seconds
-    )
-    $ts = [timespan]::fromseconds($Seconds)
-    return ("{0:mm\:ss}" -f $ts)
 }
 
 function Wait-KeyPress {
@@ -131,18 +142,6 @@ function Wait-KeyPress {
             $dots += "."
         }
         $dots = ""
-    }
-}
-
-function Test-KeyPressed {
-    param (
-        $Key
-    )
-    if ([Console]::KeyAvailable) {
-        if ([Console]::ReadKey($true).Key -eq $Key) {
-            Write-host  ""
-            Read-Host "Press 'Enter' to Unpause"
-        }
     }
 }
 
@@ -209,4 +208,4 @@ function Show-ToastNotification {
     $Notifier.Show($Toast);
 }
 
-# Start-Pomodoro
+Start-Pomodoro
