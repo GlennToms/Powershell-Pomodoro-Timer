@@ -1,10 +1,10 @@
 function Start-Pomodoro {
     <#
         .SYNOPSIS
-        Powershell based Pomodoro Timer with 3 short breaks and 1 long break before reseting
+        Powershell based Pomodoro Timer with 3 short breaks and 1 long break before resetting
         
         .DESCRIPTION
-        Powershell based Pomodoro Timer with 3 short breaks and 1 long break before reseting
+        Powershell based Pomodoro Timer with 3 short breaks and 1 long break before resetting
 
         .PARAMETER Pomodoro
         Specifies the length of time for working
