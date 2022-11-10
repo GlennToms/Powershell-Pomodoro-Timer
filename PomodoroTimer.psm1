@@ -112,10 +112,10 @@ function Start-Pomodoro {
         
         if ($DisableNotifications -eq $false) {
             if ($IsBreak) {
-                Show-ToastNotification -ApplicationTitle 'PomodoroTimer' -ToastBody "Deep work ended"
+                New-ToastNotification -ApplicationTitle 'PomodoroTimer' -ToastBody "Deep work ended"
             }
             else {
-                Show-ToastNotification -ApplicationTitle 'PomodoroTimer' -ToastBody "Break ended"
+                New-ToastNotification -ApplicationTitle 'PomodoroTimer' -ToastBody "Break ended"
             }
         }
     }
@@ -152,13 +152,13 @@ function Wait-KeyPress {
     }
 }
 
-function Show-ToastNotification {
+function New-ToastNotification {
     <#
         .SYNOPSIS
-        Creates custom Windows Toast notifications with title and text
+        Creates custom Windows Toast notifications with titles and text
         
         .DESCRIPTION
-        Creates custom Windows Toast notifications with title and text
+        Creates custom Windows Toast notifications with titles and text
 
         .PARAMETER ApplicationTitle
         Specifies the title of the application that created the Toast notification
@@ -170,20 +170,22 @@ function Show-ToastNotification {
         Specifies the text of the Toast notification 
         
         .EXAMPLE
-        PS> Show-ToastNotification -Title 'PomodoroTimer' -Text "Deep work ended"
+        PS> New-ToastNotification -ApplicationTitle "PomodoroTimer" -ToastBody "Deep work ended"
         
         .EXAMPLE
-        PS> "This is body text" | Show-ToastNotification
+        PS> "This is body text" | New-ToastNotification
+
+        .LINK
+        https://github.com/GlennToms/PowerShell-New-ToastNotification
+        
+        .LINK
+        https://den.dev/blog/powershell-windows-notification/
 
         .LINK
         https://github.com/GlennToms/Powershell-Pomodoro-Timer
 
-        .LINK
-        https://den.dev/blog/powershell-windows-notification/
-
         .NOTES
         Updated for use with Pomodoro Timer
-
     #>
     [cmdletbinding()]
     Param (
