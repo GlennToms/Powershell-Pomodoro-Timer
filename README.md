@@ -15,11 +15,14 @@ Specifies the length of time for a short break
 ## .PARAMETER LongBreak
 Specifies the length of time for a long break
 
+## .PARAMETER NumOfShortBreaks
+Specifies the nubmer of short breaks for using long break time
+
 ## .PARAMETER DisableNotifications
 Disables Windows Toast Notifications
 
 ## .EXAMPLE
-PS> Start-Pomodoro -Pomodoro 20 -ShortBreak 3 -LongBreak 10 -DisableNotifications
+PS> Start-Pomodoro -Pomodoro 20 -ShortBreak 3 -LongBreak 10 -NumOfShortBreaks 3 -DisableNotifications
 Set work time to 20 minutes, short breaks at 3 minutes, a long break at 10 minutes, and disabled notifications
 
 ## .EXAMPLE
