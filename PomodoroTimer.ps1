@@ -36,7 +36,7 @@ function Start-Pomodoro {
     param (
         [Parameter()]
         [Int]
-        $Pomodoro = 25,
+        $Pomodoro = 20,
         [Parameter()]
         [Int]
         $ShortBreak = 5,
@@ -44,18 +44,22 @@ function Start-Pomodoro {
         [Int]
         $LongBreak = 15,
         [Parameter()]
-        [String]
+        [Int]
         $NumOfShortBreaks = 3,
         [Parameter()]
         [switch]
         $DisableNotifications
     )
-    $Skip = $false
     $IsBreak = $false
-    $SessionCount = 0
     $Minutes = 0
+    $SessionCount = 0
+    $Skip = $false
     $StopWatch = New-Object -TypeName System.Diagnostics.Stopwatch
-    $TimeSpan = $null    
+    $TimeSpan = $null
+
+
+    $RotationTotal = ($Pomodoro * ($NumOfShortBreaks + 1)) + ($ShortBreak * $NumOfShortBreaks) + $LongBreak
+    Write-Host "One full rotation is $('{0:hh\:mm\:ss}' -f (New-TimeSpan -Minutes $RotationTotal))" -ForegroundColor DarkCyan
 
     while ($true) {
         Write-Host ""
