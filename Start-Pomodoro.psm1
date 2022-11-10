@@ -16,7 +16,7 @@ function Start-Pomodoro {
         Specifies the length of time for a long break
         
         .PARAMETER NumOfShortBreaks
-        Specifies the nubmer of short breaks for using long break time
+        Specifies the number of short breaks for using long break time
 
         .PARAMETER DisableNotifications
         Disables Windows Toast Notifications
@@ -27,7 +27,7 @@ function Start-Pomodoro {
 
         .EXAMPLE
         PS> Start-Pomodoro -DisableNotifications
-        Uses defaul timings and disabled notifications
+        Uses default timings and disabled notifications
 
         .LINK
         https://github.com/GlennToms/Powershell-Pomodoro-Timer
