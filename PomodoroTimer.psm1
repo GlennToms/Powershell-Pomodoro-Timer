@@ -211,4 +211,6 @@ function Show-ToastNotification {
     $Notifier.Show($Toast);
 }
 
-Start-Pomodoro -DisableNotifications
+Export-ModuleMember Start-Pomodoro
+
+# Start-Pomodoro -DisableNotifications
