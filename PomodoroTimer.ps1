@@ -79,7 +79,7 @@ function Start-Pomodoro {
         for ($SecondsLeft = $Minutes * 60; $SecondsLeft -gt 0; $SecondsLeft--) {
             Write-Host -ForegroundColor Yellow "`r$(Convert-FromSeconds -Seconds $SecondsLeft) left of $(Convert-FromSeconds -Seconds ($Minutes * 60))" -NoNewline
             for ($k = 0; $k -lt 10; $k++) {
-                Start-Sleep -Milliseconds 1
+                Start-Sleep -Milliseconds 100
                 Test-KeyPressed -Key $PlayPauseKey
             }
         }
