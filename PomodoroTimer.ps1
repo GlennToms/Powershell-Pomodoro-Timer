@@ -3,13 +3,16 @@ function Start-Pomodoro {
     param (
         [Parameter()]
         [Int]
-        $Pomodoro = 25,
+        # $Pomodoro = 25,
+        $Pomodoro = 1,
         [Parameter()]
         [Int]
-        $ShortBreak = 5,
+        # $ShortBreak = 5,
+        $ShortBreak = 2,
         [Parameter()]
         [Int]
-        $LongBreak = 15,
+        # $LongBreak = 15,
+        $LongBreak = 3,
         [Parameter()]
         [String]
         $PlayPauseKey = "SpaceBar"
@@ -17,7 +20,7 @@ function Start-Pomodoro {
     $IsBreak = $false
     $SessionCount = 0
     $Minutes = 0
-    
+
     while ($true) {
         if ($IsBreak) {
             Write-Host ""
@@ -46,9 +49,15 @@ function Start-Pomodoro {
         for ($SecondsLeft = $Minutes * 60; $SecondsLeft -gt 0; $SecondsLeft--) {
             Write-Host -ForegroundColor Yellow "`r$(Convert-FromSeconds -Seconds $SecondsLeft) left of $(Convert-FromSeconds -Seconds ($Minutes * 60))" -NoNewline
             for ($k = 0; $k -lt 10; $k++) {
-                Start-Sleep -Milliseconds 100
+                Start-Sleep -Milliseconds 1
                 Test-KeyPressed -Key $PlayPauseKey
             }
+        }
+        if ($IsBreak) {
+            Show-Notification -ToastTitle 'PomodoroTimer' -ToastText "Deep work ended"
+        }
+        else {
+            Show-Notification -ToastTitle 'PomodoroTimer' -ToastText "Break ended"
         }
     }
 }
@@ -102,6 +111,35 @@ function Test-KeyPressed {
             Read-Host "Press 'Enter' to Unpause"
         }
     }
+}
+
+function Show-Notification {
+    [cmdletbinding()]
+    Param (
+        [string]
+        $ToastTitle,
+        [string]
+        [parameter(ValueFromPipeline)]
+        $ToastText
+    )
+
+    [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] > $null
+    $Template = [Windows.UI.Notifications.ToastNotificationManager]::GetTemplateContent([Windows.UI.Notifications.ToastTemplateType]::ToastText02)
+
+    $RawXml = [xml] $Template.GetXml()
+    ($RawXml.toast.visual.binding.text | Where-Object { $_.id -eq "1" }).AppendChild($RawXml.CreateTextNode($ToastTitle)) > $null
+    ($RawXml.toast.visual.binding.text | Where-Object { $_.id -eq "2" }).AppendChild($RawXml.CreateTextNode($ToastText)) > $null
+
+    $SerializedXml = New-Object Windows.Data.Xml.Dom.XmlDocument
+    $SerializedXml.LoadXml($RawXml.OuterXml)
+
+    $Toast = [Windows.UI.Notifications.ToastNotification]::new($SerializedXml)
+    $Toast.Tag = "PowerShell"
+    $Toast.Group = "PowerShell"
+    $Toast.ExpirationTime = [DateTimeOffset]::Now.AddMinutes(1)
+
+    $Notifier = [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier("PowerShell")
+    $Notifier.Show($Toast);
 }
 
 Start-Pomodoro
