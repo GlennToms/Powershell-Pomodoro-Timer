@@ -14,12 +14,15 @@ function Start-Pomodoro {
         
         .PARAMETER LongBreak
         Specifies the length of time for a long break
+        
+        .PARAMETER NumOfShortBreaks
+        Specifies the nubmer of short breaks for using long break time
 
         .PARAMETER DisableNotifications
         Disables Windows Toast Notifications
 
         .EXAMPLE
-        PS> Start-Pomodoro -Pomodoro 20 -ShortBreak 3 -LongBreak 10 -DisableNotifications
+        PS> Start-Pomodoro -Pomodoro 20 -ShortBreak 3 -LongBreak 10 -NumOfShortBreaks 3 -DisableNotifications
         Set work time to 20 minutes, short breaks at 3 minutes, a long break at 10 minutes, and disabled notifications
 
         .EXAMPLE
@@ -42,7 +45,7 @@ function Start-Pomodoro {
         $LongBreak = 15,
         [Parameter()]
         [String]
-        $PlayPauseKey = "SpaceBar",
+        $NumOfShortBreaks = 3,
         [Parameter()]
         [switch]
         $DisableNotifications
@@ -57,15 +60,15 @@ function Start-Pomodoro {
     while ($true) {
         Write-Host ""
         if ($IsBreak) {
-            if ($SessionCount -lt 3) {
+            $SessionCount += 1
+            if ($SessionCount -ne $NumOfShortBreaks) {
                 $Minutes = $ShortBreak
-                $SessionCount += 1
                 Write-Host -ForegroundColor Cyan "Press 'Enter' to start short break #$SessionCount for $("{0:mm\:ss}" -f (New-TimeSpan -Minutes $Minutes)) minutes"
             }
             else {
                 $Minutes = $LongBreak
+                Write-Host -ForegroundColor Green "Press 'Enter' to start long break #$SessionCount for $("{0:mm\:ss}" -f (New-TimeSpan -Minutes $Minutes)) minutes"
                 $SessionCount = 0
-                Write-Host -ForegroundColor Green "Press 'Enter' to start long break #4 for $("{0:mm\:ss}" -f (New-TimeSpan -Minutes $Minutes)) minutes"
             }
         }
         else {
@@ -208,4 +211,4 @@ function Show-ToastNotification {
     $Notifier.Show($Toast);
 }
 
-Start-Pomodoro
+Start-Pomodoro -DisableNotifications
