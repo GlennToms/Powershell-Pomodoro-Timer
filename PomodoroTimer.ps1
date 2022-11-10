@@ -61,7 +61,7 @@ function Start-Pomodoro {
         Write-Host ""
         if ($IsBreak) {
             $SessionCount += 1
-            if ($SessionCount -ne $NumOfShortBreaks) {
+            if ($SessionCount -le $NumOfShortBreaks) {
                 $Minutes = $ShortBreak
                 Write-Host -ForegroundColor Cyan "Press 'Enter' to start short break #$SessionCount for $("{0:mm\:ss}" -f (New-TimeSpan -Minutes $Minutes)) minutes"
             }
@@ -211,6 +211,6 @@ function Show-ToastNotification {
     $Notifier.Show($Toast);
 }
 
-Export-ModuleMember Start-Pomodoro
+# Export-ModuleMember Start-Pomodoro
 
-# Start-Pomodoro -DisableNotifications
+Start-Pomodoro -DisableNotifications
